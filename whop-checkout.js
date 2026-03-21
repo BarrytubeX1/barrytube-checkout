@@ -22,10 +22,8 @@ exports.handler = async function(event) {
     const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
     const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 
-    // Direct Whop checkout link b price
     const purchaseUrl = 'https://whop.com/checkout/prod_To5Tnqjf5ka1M/?price=' + price.toFixed(2);
 
-    // Telegram
     if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
       const msg = '🛍 New Order — BarryTube\n\n'
         + '👤 ' + name + '\n'

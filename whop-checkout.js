@@ -24,41 +24,51 @@ exports.handler = async function(event) {
     const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
     const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 
-    // Create checkout configuration b dynamic price
-const res = await fetch('https://api.whop.com/v5/plans', {
+    console.log('Starting Whop API call with price:', price);
+
+    const res = await fetch('https://api.whop.com/api/v2/checkout_links', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + WHOP_API_KEY,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        company_id: COMPANY_ID,
-        initial_price: price,
-        billing_period: 0,
-        plan_type: 'one_time'
+        product_id: 'prod_To5Tnqjf5ka1M',
+        stock: 1,
+        price: Math.round(price * 100)
       })
     });
 
-    const planData = await res.json();
-    console.log('Whop response:', JSON.stringify(planData));
+    const text = await res.text();
+    console.log('Whop raw response:', text);
 
-    const purchaseUrl = planData.purchase_url || (planData.id ? 'https://whop.com/checkout/' + planData.id : null);
+    let planData;
+    try {
+      planData = JSON.parse(text);
+    } catch(e) {
+      return {
+        statusCode: 500,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: 'Invalid JSON from Whop', raw: text })
+      };
+    }
+
+    const purchaseUrl = planData.url || planData.purchase_url || (planData.id ? 'https://whop.com/checkout/' + planData.id : null);
 
     if (!purchaseUrl) {
       return {
         statusCode: 400,
         headers: { 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ error: 'Failed', details: planData })
+        body: JSON.stringify({ error: 'No purchase URL', details: planData })
       };
     }
 
-    // Telegram
     if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
       const msg = '🛍 New Order — BarryTube\n\n'
         + '👤 ' + name + '\n'
         + '📧 ' + email + '\n'
         + '📍 ' + address + '\n\n'
-        + '🛒 Products:\n' + items + '\n\n'
+        + '🛒 ' + items + '\n\n'
         + '💰 Total: $' + price;
 
       await fetch('https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN + '/sendMessage', {
@@ -78,7 +88,7 @@ const res = await fetch('https://api.whop.com/v5/plans', {
     };
 
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Handler error:', err.message);
     return {
       statusCode: 500,
       headers: { 'Access-Control-Allow-Origin': '*' },

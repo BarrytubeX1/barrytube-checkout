@@ -12,9 +12,10 @@ exports.handler = async function(event) {
   }
 
   try {
-const body = event.body ? JSON.parse(event.body) : {};
-console.log('Received body:', event.body);
-console.log('HTTP method:', event.httpMethod);    const price = parseFloat(body.price);
+    const body = event.body ? JSON.parse(event.body) : {};
+    console.log('Received body:', event.body);
+    console.log('HTTP method:', event.httpMethod);
+    const price = parseFloat(body.price);
     const email = body.email || '';
     const name = body.name || '';
     const address = body.address || '';

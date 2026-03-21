@@ -28,15 +28,18 @@ exports.handler = async function(event) {
 
     console.log('Starting Whop API call with price:', price);
 
-const res = await fetch('https://api.whop.com/api/v2/checkout_links', {
+const res = await fetch('https://api.whop.com/api/v2/plans', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + WHOP_API_KEY,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        product_id: 'prod_To5Tnqjf5ka1M',
-        initial_price: price
+        access_pass_id: 'prod_To5Tnqjf5ka1M',
+        plan_type: 'one_time',
+        initial_price: price,
+        billing_period: 0,
+        internal_notes: items
       })
     });
 

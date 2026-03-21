@@ -42,7 +42,7 @@ const res = await fetch('https://api.whop.com/v5/plans', {
     const planData = await res.json();
     console.log('Whop response:', JSON.stringify(planData));
 
-    const purchaseUrl = planData.purchase_url || (planData.id ? 'https://whop.com/checkout/' + data.id : null);
+    const purchaseUrl = planData.purchase_url || (planData.id ? 'https://whop.com/checkout/' + planData.id : null);
 
     if (!purchaseUrl) {
       return {

@@ -43,8 +43,9 @@ const res = await fetch('https://api.whop.com/api/v2/plans', {
       })
     });
 
-    const text = await res.text();
-    console.log('Whop raw response:', text);
+const statusCode = res.status;
+const text = await res.text();
+console.log('Whop status:', statusCode, 'response:', text);    console.log('Whop raw response:', text);
 
     let planData;
     try {

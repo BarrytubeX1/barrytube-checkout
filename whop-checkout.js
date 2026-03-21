@@ -25,7 +25,7 @@ exports.handler = async function(event) {
     const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 
     // Create checkout configuration b dynamic price
-    const res = await fetch('https://api.whop.com/checkout_configurations', {
+const res = await fetch('https://api.whop.com/v5/plans', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + WHOP_API_KEY,
@@ -33,28 +33,22 @@ exports.handler = async function(event) {
       },
       body: JSON.stringify({
         company_id: COMPANY_ID,
-        plan: {
-          initial_price: price,
-          plan_type: 'one_time'
-        },
-        metadata: {
-          customer_name: name,
-          customer_email: email,
-          items: items
-        }
+        initial_price: price,
+        billing_period: 0,
+        plan_type: 'one_time'
       })
     });
 
-    const data = await res.json();
-    console.log('Whop response:', JSON.stringify(data));
+    const planData = await res.json();
+    console.log('Whop response:', JSON.stringify(planData));
 
-    const purchaseUrl = data.purchase_url || (data.id ? 'https://whop.com/checkout/' + data.id : null);
+    const purchaseUrl = planData.purchase_url || (planData.id ? 'https://whop.com/checkout/' + data.id : null);
 
     if (!purchaseUrl) {
       return {
         statusCode: 400,
         headers: { 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ error: 'Failed to create checkout', details: data })
+        body: JSON.stringify({ error: 'Failed', details: planData })
       };
     }
 

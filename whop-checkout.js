@@ -13,61 +13,19 @@ exports.handler = async function(event) {
 
   try {
     const body = event.body ? JSON.parse(event.body) : {};
-    console.log('Received body:', event.body);
-    console.log('HTTP method:', event.httpMethod);
-    const price = parseFloat(body.price);
+    const price = parseFloat(body.price) || 0;
     const email = body.email || '';
     const name = body.name || '';
     const address = body.address || '';
     const items = body.items || '';
 
-    const WHOP_API_KEY = 'apik_8OnzesQobHB03_C4637599_C_b9308228e3c01e6af6419e04a9032913693aac3e9fcf5a724d01b4c391ce37';
-    const COMPANY_ID = 'biz_xZ3GNuKiUH3e3r';
     const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
     const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 
-    console.log('Starting Whop API call with price:', price);
+    // Direct Whop checkout link b price
+    const purchaseUrl = 'https://whop.com/checkout/prod_To5Tnqjf5ka1M/?price=' + price.toFixed(2);
 
-const res = await fetch('https://api.whop.com/api/v2/plans', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + WHOP_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        access_pass_id: 'prod_To5Tnqjf5ka1M',
-        plan_type: 'one_time',
-        initial_price: price,
-        billing_period: 0,
-        internal_notes: items
-      })
-    });
-
-const statusCode = res.status;
-const text = await res.text();
-console.log('Whop status:', statusCode, 'response:', text);    console.log('Whop raw response:', text);
-
-    let planData;
-    try {
-      planData = JSON.parse(text);
-    } catch(e) {
-      return {
-        statusCode: 500,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ error: 'Invalid JSON from Whop', raw: text })
-      };
-    }
-
-    const purchaseUrl = planData.url || planData.purchase_url || (planData.id ? 'https://whop.com/checkout/' + planData.id : null);
-
-    if (!purchaseUrl) {
-      return {
-        statusCode: 400,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ error: 'No purchase URL', details: planData })
-      };
-    }
-
+    // Telegram
     if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
       const msg = '🛍 New Order — BarryTube\n\n'
         + '👤 ' + name + '\n'
@@ -93,7 +51,6 @@ console.log('Whop status:', statusCode, 'response:', text);    console.log('Whop
     };
 
   } catch (err) {
-    console.error('Handler error:', err.message);
     return {
       statusCode: 500,
       headers: { 'Access-Control-Allow-Origin': '*' },

@@ -33,7 +33,7 @@ exports.handler = async function(event) {
       },
       body: JSON.stringify({
         company_id: 'biz_xZ3GNuKiUH3e3r',
-        access_pass_id: 'prod_To5Tnqjf5ka1M',
+        product_id: 'prod_To5Tnqjf5ka1M',
         plan_type: 'one_time',
         initial_price: price
       })

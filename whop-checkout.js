@@ -19,7 +19,7 @@ exports.handler = async function(event) {
     const address = body.address || '';
     const items = body.items || '';
 
-    const WHOP_API_KEY = 'apik_8OnzesQobHB03_C4637599_C_b9308228e3c01e6af6419e04a9032913693aac3e9fcf5a724d01b4c391ce37';
+    const WHOP_API_KEY = 'apik_3jpMMlBwWG9Fi_C4637599_C_66082bca219cda13035673656d6c1aba30425061731c166a8433fc14b33261';
     const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
     const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 
